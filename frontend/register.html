@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro - LazoSalud</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <div class="header-contenedor">
+    <h1>LazoSalud</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="quien-soy.html">Quién soy</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="formulario">
+    <h2>Registro de Paciente</h2>
+
+    <form id="formRegistro">
+      <label>Nombre</label>
+      <input type="text" id="nombre" required />
+
+      <label>Apellido</label>
+      <input type="text" id="apellido" required />
+
+      <label>Email</label>
+      <input type="email" id="email" required />
+
+      <label>Teléfono</label>
+      <input type="tel" id="telefono" required />
+
+      <label>Contraseña</label>
+      <input type="password" id="password" required />
+
+      
+      <input type="hidden" id="rol" value="Paciente" />
+
+      <button type="submit">Registrarme</button>
+    </form>
+
+    <p id="mensajeRegistro"></p>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 LazoSalud. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+  document.getElementById("formRegistro").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const datos = {
+      nombre: document.getElementById("nombre").value,
+      apellido: document.getElementById("apellido").value,
+      email: document.getElementById("email").value,
+      telefono: document.getElementById("telefono").value,
+      password: document.getElementById("password").value,
+      rol: "Paciente"
+    };
+
+    try {
+      const res = await fetch("http://localhost:3000/api/usuarios", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        document.getElementById("mensajeRegistro").textContent =
+          "Registro exitoso. Ahora puedes iniciar sesión.";
+        document.getElementById("mensajeRegistro").style.color = "green";
+        
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2000);
+      } else {
+        document.getElementById("mensajeRegistro").textContent =
+          data.message || "Error al registrar usuario";
+        document.getElementById("mensajeRegistro").style.color = "red";
+      }
+    } catch (error) {
+      document.getElementById("mensajeRegistro").textContent =
+        "No se pudo conectar con el servidor";
+      document.getElementById("mensajeRegistro").style.color = "red";
+      console.error(error);
+    }
+  });
+</script>
+
+</body>
+</html>

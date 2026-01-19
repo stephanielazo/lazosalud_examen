@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - LazoSalud</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>LazoSalud</h1>
+  </header>
+
+  <main>
+    <section class="formulario">
+      <h2>Iniciar sesión</h2>
+      <form id="formLogin">
+        <label>Email</label>
+        <input type="email" id="email" required>
+        <label>Contraseña</label>
+        <input type="password" id="password" required>
+        <button type="submit">Ingresar</button>
+      </form>
+      <p id="mensajeLogin"></p>
+
+      
+      <p style="margin-top: 1em;">
+        <a href="index.html" class="btn-volver">← Volver al inicio</a>
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 LazoSalud. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    document.getElementById('formLogin').addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const datos = {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+      };
+
+      try {
+        const res = await fetch('http://localhost:3000/api/usuarios/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datos)
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          // Guardar _id y rol para controlar accesos
+          localStorage.setItem('userId', data.usuario._id);
+          localStorage.setItem('rol', data.usuario.rol);
+
+          // Redirigir según rol
+          if (data.usuario.rol === 'Administrador') {
+            window.location.href = 'historial-pacientes.html';
+          } else if (data.usuario.rol === 'Paciente') {
+            window.location.href = 'mis-citas.html';
+          } else {
+            document.getElementById('mensajeLogin').textContent = 'Rol no permitido';
+          }
+
+        } else {
+          document.getElementById('mensajeLogin').textContent = data.message || 'Email o contraseña incorrectos';
+        }
+
+      } catch (err) {
+        document.getElementById('mensajeLogin').textContent = 'No se pudo conectar con el servidor';
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LazoSalud - Tu espacio terapéutico</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+
+<header>
+  <div class="header-contenedor">
+    <h1>LazoSalud</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html" class="active">Inicio</a></li>
+        <li><a href="quien-soy.html">Quién soy</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+<section class="hero">
+  <div class="hero-text">
+    <h2>Tu bienestar emocional es importante</h2>
+    <p>Estoy aquí para acompañarte con escucha empática y apoyo profesional.</p>
+
+    <div class="botones">
+      <button id="btn-agendar">Agendar sesión</button>
+      <button id="btn-inicio">Iniciar sesión</button>
+      <button id="btn-registrar">Registrarse</button>
+    </div>
+
+    
+    <section class="servicios">
+      <h2>¿Cómo puedo ayudarte?</h2>
+      <ul>
+        <li>🧠 Terapia individual centrada en tus necesidades</li>
+        <li>💞 Terapia de pareja</li>
+        <li>📅 Sesiones online con horarios flexibles</li>
+        <li>💻 Pagos por transferencia</li>
+        <li>🤝 Espacio confidencial, empático y cercano</li>
+      </ul>
+    </section>
+  </div>
+</section>
+
+
+<footer>
+  <p>© 2026 LazoSalud. Todos los derechos reservados.</p>
+</footer>
+
+
+<div class="chatbot-flotante" id="chatbotBtn">💬</div>
+
+
+<div class="chatbot-ventana" id="chatbotWindow">
+  <div class="chatbot-header">
+    <span>Chat de apoyo emocional</span>
+    <button id="cerrarChat">✖</button>
+  </div>
+  <div class="chatbot-mensajes" id="chatbotMensajes">
+    <div class="mensaje sistema">
+      Hola, soy LazoBot. ¿En qué puedo ayudarte hoy?
+    </div>
+  </div>
+  <div class="chatbot-input">
+    <input type="text" id="mensajeUsuario" placeholder="Escribe tu mensaje..." />
+    <button id="enviarMensaje">Enviar</button>
+  </div>
+</div>
+
+
+<script src="https://assets.calendly.com/assets/external/widget.js"></script>
+
+
+<script src="main.js"></script>
+
+<script>
+  
+  document.getElementById("btn-agendar").addEventListener("click", () => {
+    window.location.href =
+      "https://calendly.com/ps-stephanielazo/sesion-psicologa";
+  });
+
+  
+  document.getElementById("btn-inicio").addEventListener("click", () => {
+    window.location.href = "login.html";
+  });
+  document.getElementById("btn-registrar").addEventListener("click", () => {
+    window.location.href = "register.html";
+  });
+</script>
+
+</body>
+</html>

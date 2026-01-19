@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Citas - LazoSalud</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-contenedor">
+      <h1>LazoSalud</h1>
+      <nav>
+        <ul>
+          <li><a href="#" id="logout">Cerrar sesión</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="formulario">
+      <h2>Mis Citas Agendadas</h2>
+      <ul id="listaCitas">
+        <li>Cargando tus citas...</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 LazoSalud. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    
+    const userId = localStorage.getItem('userId'); 
+    const rol = localStorage.getItem('rol'); 
+
+    if (!userId || rol !== 'Paciente') {
+      alert('Debes iniciar sesión como paciente');
+      window.location.href = 'login.html';
+    }
+
+    async function cargarCitas() {
+      const lista = document.getElementById('listaCitas');
+      lista.innerHTML = '<li>Cargando tus citas...</li>';
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/agendamientos/paciente/${userId}`, {
+          headers: {
+            'x-user-id': userId
+          }
+        });
+
+        if (!res.ok) throw new Error('No se pudieron obtener las citas');
+
+        const citas = await res.json();
+
+        if (!Array.isArray(citas) || citas.length === 0) {
+          lista.innerHTML = '<li>No tienes citas agendadas.</li>';
+        } else {
+          lista.innerHTML = citas.map(cita => `
+            <li>
+              ${new Date(cita.fecha_hora).toLocaleDateString()} - ${new Date(cita.fecha_hora).toLocaleTimeString()} <br>
+              <a href="${cita.link_calendly}" target="_blank">Unirse a la sesión</a>
+            </li>
+          `).join('');
+        }
+
+      } catch (err) {
+        lista.innerHTML = '<li>Error cargando tus citas.</li>';
+        console.error(err);
+      }
+    }
+
+    cargarCitas();
+
+    
+    document.getElementById('logout').addEventListener('click', () => {
+      localStorage.removeItem('userId');
+      localStorage.removeItem('rol');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>

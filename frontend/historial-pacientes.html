@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial de Pacientes - LazoSalud</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-contenedor">
+      <h1>LazoSalud</h1>
+      <nav>
+        <ul>
+          <li><a href="#" id="logout">Cerrar sesión</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="formulario">
+      <h2>Pacientes con Citas Agendadas</h2>
+      <table id="tablaPacientes">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Próxima Cita</th>
+            <th>Link de Sesión</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="4">Cargando pacientes...</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 LazoSalud. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    
+    const userId = localStorage.getItem('userId'); 
+    const rol = localStorage.getItem('rol'); 
+
+    if (!userId || rol !== 'Administrador') {
+      alert('Debes iniciar sesión como administrador');
+      window.location.href = 'login.html';
+    }
+
+    async function cargarPacientes() {
+      const tbody = document.querySelector('#tablaPacientes tbody');
+      tbody.innerHTML = '<tr><td colspan="4">Cargando pacientes...</td></tr>';
+
+      try {
+        const res = await fetch('http://localhost:3000/api/agendamientos', {
+          headers: {
+            'x-user-id': userId
+          }
+        });
+
+        if (!res.ok) throw new Error('No se pudieron obtener los agendamientos');
+
+        const agendamientos = await res.json();
+
+        if (!Array.isArray(agendamientos) || agendamientos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4">No hay pacientes con citas agendadas.</td></tr>';
+          return;
+        }
+
+        
+        const mapPacientes = new Map();
+        agendamientos
+          .sort((a, b) => new Date(a.fecha_hora) - new Date(b.fecha_hora))
+          .forEach(a => {
+            if (!mapPacientes.has(a.paciente._id)) mapPacientes.set(a.paciente._id, a);
+          });
+
+        const filas = Array.from(mapPacientes.values()).map(a => `
+          <tr>
+            <td>${a.paciente.nombre} ${a.paciente.apellido}</td>
+            <td>${a.paciente.email}</td>
+            <td>${new Date(a.fecha_hora).toLocaleDateString()} ${new Date(a.fecha_hora).toLocaleTimeString()}</td>
+            <td><a href="${a.link_calendly}" target="_blank">Unirse</a></td>
+          </tr>
+        `);
+
+        tbody.innerHTML = filas.join('');
+
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="4">Error cargando pacientes.</td></tr>';
+        console.error(err);
+      }
+    }
+
+    cargarPacientes();
+
+    
+    document.getElementById('logout').addEventListener('click', () => {
+      localStorage.removeItem('userId');
+      localStorage.removeItem('rol');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>
